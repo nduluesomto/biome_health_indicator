@@ -1,7 +1,16 @@
-import 'package:biome_activity_test/data/%20models/step_data_model.dart';
-
 class StepCountEntity {
-  final List<StepDataModel> steps; // Steps for daily, weekly, monthly, yearly
+  final DateTime startTime;
+  final DateTime endTime;
+  final int steps;
 
-  StepCountEntity({required this.steps});
+  const StepCountEntity({
+    required this.steps,
+    required this.startTime,
+    required this.endTime,
+  });
+
+  @override
+  String toString() {
+    return 'StepCountEntity(steps: $steps, startTime: $startTime, endTime: $endTime)';
+  }
 }

@@ -1,3 +1,6 @@
+import 'package:biome_activity_test/di.dart';
+import 'package:biome_activity_test/domain/entities/calories_entity.dart';
+import 'package:biome_activity_test/domain/entities/step_count_entity.dart';
 import 'package:biome_activity_test/domain/usecases/health_usecase.dart';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
@@ -5,36 +8,32 @@ import 'package:equatable/equatable.dart';
 part 'step_tracker_state.dart';
 
 class StepTrackerCubit extends Cubit<StepTrackerState> {
-  final FetchStepData _fetchStepData;
-
-  StepTrackerCubit(this._fetchStepData) : super(StepTrackerInitial());
+  StepTrackerCubit() : super(StepTrackerInitial());
 
   Future<void> loadHealthData() async {
     emit(StepTrackerLoading());
 
     try {
-      bool isAuthorized = await _fetchStepData.authorization();
-      if (!isAuthorized) {
-        emit(const StepTrackerError('Разрешения не предоставлены'));
-      }
+      await locator<FetchStepData>().installHealthConnect();
+      await locator<FetchStepData>().authorize();
 
-      DateTime startDate = DateTime.now().subtract(const Duration(days: 1));
-      DateTime endDate = DateTime.now();
+      await locator<FetchStepData>().addStepData();
+      await locator<FetchStepData>().addCaloriesData();
 
-      final stepData = await _fetchStepData.steps(startDate, endDate);
-      final caloriesData = await _fetchStepData.calories(startDate, endDate);
+      final stepData = await locator<FetchStepData>().fetchStepData();
+      print(stepData);
+      final caloriesData = await locator<FetchStepData>().fetchCaloriesData();
 
-      emit(
-        StepTrackerLoaded(
-            steps: stepData.steps
-                .fold(0, (sum, stepModel) => sum + stepModel.steps),
-            calories: caloriesData.calories
-                .fold(0.0, (sum, data) => sum + (data.calories)),
-            distance: stepData.steps.fold(
-                0.0, (sum, stepModel) => sum + stepModel.steps * 0.000762)),
-      );
-    } catch (e) {
-      emit(const StepTrackerError('Не удалось загрузить данные о состоянии здоровья'));
+      emit(StepTrackerLoaded(
+        steps: [stepData],
+        calories: [caloriesData],
+        distance: stepData.steps * 0.000762,
+      ));
+    } catch (e, stacktrace) {
+      print('Error: $e');
+      print('Stacktrace: $stacktrace');
+      emit(const StepTrackerError(
+          'Не удалось загрузить данные о состоянии здоровья'));
     }
   }
 }

@@ -15,8 +15,8 @@ class StepTrackerLoading extends StepTrackerState {
 }
 
 class StepTrackerLoaded extends StepTrackerState {
-  final double calories;
-  final int steps;
+  final List<StepCountEntity> steps;
+  final List<CaloriesEntity> calories;
 
   final double distance;
 

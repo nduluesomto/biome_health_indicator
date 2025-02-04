@@ -1,7 +1,16 @@
-import 'package:biome_activity_test/data/%20models/calories_data_model.dart';
-
 class CaloriesEntity {
-  final List<CaloriesDataModel> calories;
+  final double calories;
+  final DateTime startTime;
+  final DateTime endTime;
 
-  CaloriesEntity({required this.calories});
+  const CaloriesEntity({
+    required this.calories,
+    required this.startTime,
+    required this.endTime,
+  });
+
+  @override
+  String toString() {
+    return 'CaloriesEntity(calories: $calories, startTime: $startTime, endTime: $endTime)';
+  }
 }

@@ -1,5 +1,3 @@
-import 'package:biome_activity_test/di.dart';
-import 'package:biome_activity_test/domain/usecases/health_usecase.dart';
 import 'package:biome_activity_test/presentation/blocs/steps_tracker_cubit/step_tracker_cubit.dart';
 import 'package:biome_activity_test/presentation/widgets/steps_widget.dart';
 import 'package:flutter/material.dart';
@@ -23,19 +21,18 @@ class HomeScreen extends StatelessWidget {
         body: Container(
           height: MediaQuery.of(context).size.height,
           width: MediaQuery.of(context).size.width,
-          decoration:  BoxDecoration(
+          decoration: BoxDecoration(
               gradient: RadialGradient(
                   center: Alignment.topRight,
                   radius: 0.8,
                   colors: [
-                    Colors.blueGrey.shade600,
+                Colors.blueGrey.shade600,
                 Colors.grey.shade800
                 // Color(0xBF032D3D),
                 //Color(0xFF005B96),
               ])),
           child: BlocProvider(
-              create: (context) =>
-                  StepTrackerCubit(locator<FetchStepData>())..loadHealthData(),
+              create: (context) => StepTrackerCubit()..loadHealthData(),
               child: BlocBuilder<StepTrackerCubit, StepTrackerState>(
                 builder: (context, state) {
                   if (state is StepTrackerLoading) {
@@ -51,11 +48,15 @@ class HomeScreen extends StatelessWidget {
                             Padding(
                                 padding:
                                     const EdgeInsets.symmetric(horizontal: 16),
-                                child: StepWidgetContent(
-                                  steps: state.steps,
-                                  calories: state.calories,
+                                child:
+                                StepWidgetContent(
+                                  steps: state.steps.fold(0, (sum, stepEntity) => sum + stepEntity.steps),
+                                  calories: state.calories.isNotEmpty
+                                      ? state.calories.fold(0.0, (sum, calorieEntity) => sum + calorieEntity.calories) // Sum the calories
+                                      : 0.0,
                                   distance: state.distance,
-                                )),
+                                )
+                            ),
                           ],
                         ),
                       ),

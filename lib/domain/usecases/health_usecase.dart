@@ -1,21 +1,30 @@
+import 'package:biome_activity_test/di.dart';
 import 'package:biome_activity_test/domain/entities/calories_entity.dart';
 import 'package:biome_activity_test/domain/entities/step_count_entity.dart';
 import 'package:biome_activity_test/domain/repositories/health_repository.dart';
 
 class FetchStepData {
-  final HealthRepository repository;
-
-  FetchStepData(this.repository);
-
-  Future<bool> authorization(){
-    return repository.authorization();
+  Future<void> installHealthConnect() async {
+    return await locator<HealthRepository>().installHealthConnect();
   }
 
-  Future<StepCountEntity> steps(DateTime startTime, DateTime endTime) {
-    return repository.getStepData(startTime, endTime);
+  Future<void> authorize() async {
+    return await locator<HealthRepository>().authorize();
   }
 
-  Future<CaloriesEntity> calories(DateTime startTime, DateTime endTime){
-    return repository.getCaloriesData(startTime, endTime);
+  Future<void> addStepData() async {
+    return await locator<HealthRepository>().addStepData();
+  }
+
+  Future<void> addCaloriesData() async {
+    return await locator<HealthRepository>().addCaloriesData();
+  }
+
+  Future<StepCountEntity> fetchStepData() async {
+    return await locator<HealthRepository>().fetchStepData();
+  }
+
+  Future<CaloriesEntity> fetchCaloriesData() async {
+    return await locator<HealthRepository>().fetchCaloriesData();
   }
 }
